@@ -8,6 +8,10 @@ class Mothership::Inputs
     @cache = {}
   end
 
+  def given?(name)
+    @inputs.key?(name)
+  end
+
   def [](name, *args)
     return @inputs[name] if @inputs.key? name
     return @cache[name] if @cache.key? name

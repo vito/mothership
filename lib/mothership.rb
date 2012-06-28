@@ -42,4 +42,9 @@ class Mothership
   def option(name, *args)
     @@inputs[name, *args]
   end
+
+  # test if an option was explicitly provided
+  def option_given?(name)
+    @@inputs.given? name
+  end
 end
