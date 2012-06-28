@@ -1,18 +1,30 @@
 require "mothership/inputs"
 
 class Mothership::Command
-  attr_accessor :name, :description, :inputs, :arguments, :flags
+  attr_accessor :name, :description
 
-  def initialize(context, description = nil, inputs = {})
+  attr_reader :inputs, :arguments, :flags
+
+  attr_reader :before, :after, :around, :filters
+
+  def initialize(context, description = nil)
     @context = context
     @description = description
-    @inputs = inputs
+
+    # inputs accepted by command
+    @inputs = {}
 
     # inputs that act as arguments
     @arguments = []
 
     # flag -> input (e.g. --name -> :name)
     @flags = {}
+
+    # various callbacks
+    @before = []
+    @after = []
+    @around = []
+    @filters = Hash.new { |h, k| h[k] = [] }
   end
 
   def usage
@@ -34,11 +46,32 @@ class Mothership::Command
   end
 
   def invoke(inputs)
-    ctx = @context.new
+    @before.each(&:call)
 
-    ctx.send(
-      @name,
-      Mothership::Inputs.new(self, ctx, inputs))
+    ctx = @context.new(self)
+    name = @name
+    cmd = self
+    action = proc do |*given_inputs|
+      ctx.send(
+        name,
+        Mothership::Inputs.new(
+          cmd,
+          ctx,
+          given_inputs.first || inputs))
+    end
+
+    @around.each do |a|
+      before = action
+      action = proc do |*given_inputs|
+        ctx.instance_exec(before, given_inputs.first || inputs, &a)
+      end
+    end
+
+    res = ctx.instance_exec(inputs, &action)
+
+    @after.each(&:call)
+
+    res
   end
 
   def add_input(name, options = {}, &default)

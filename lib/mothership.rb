@@ -1,4 +1,5 @@
 require "mothership/base"
+require "mothership/callbacks"
 require "mothership/command"
 require "mothership/parser"
 require "mothership/help"
@@ -22,7 +23,7 @@ class Mothership
     # arguments and flags can be in any order; all flags will be parsed out
     # first, and the bits left over will be treated as arguments
     def start(argv)
-      return new.invoke(:help) if argv.empty?
+      return new(@@commands[:help]).invoke(:help) if argv.empty?
 
       @@inputs = Inputs.new(@@global, self, {})
 

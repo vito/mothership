@@ -5,6 +5,11 @@ class Mothership
   # parsed global input set
   @@inputs = nil
 
+  # Initialize with the command being executed.
+  def initialize(cmd)
+    @command = cmd
+  end
+
   class << self
     # start defining a new command with the given description
     def desc(description)
