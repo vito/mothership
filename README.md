@@ -26,7 +26,7 @@ optional censoring flag:
       desc "Insults the user."
       input :censor, :type => :boolean, :alias => "-c"
       def insult
-        puts "Hey man, #{curse_word(input[:censored])} you."
+        puts "Hey man, #{curse_word(input[:censor])} you."
       end
 
       private
@@ -40,22 +40,21 @@ optional censoring flag:
       end
     end
 
-When the 'insult' command is defined, it is registered in `CommandSet`. When
-the user invokes 'insult', the `Insults` class is instantiated, the inputs are
-parsed, and the `insult` method is called with the given inputs as a hash-like
-object.
+When the 'insult' command is defined, it is added to the `Mothership`. When
+the user invokes `myapp insult`, the `Insults` class is instantiated, the
+inputs are parsed, and the `insult` method is called with the user's inputs as
+a hash-like object.
 
 A default value may be provided for an input by calling it with a block that
-gets called when the value is requested but not provided by the user:
+gets called when the value is needed but not provided by the user:
 
     input(:name) { ask("What's your name?") }
 
 The block is called on the instance of the object, the first time you try to
-do `input[:foo]`. To pass values to the block, you can do `input[:foo, arg1,
-...]`.
+do `input[:foo]`. To pass values to the block, do `input[:foo, arg1, ...]`.
 
 The returned value is cached, so you can just use `input[:name]` to access the
-value, and it will only ask the first time. Full example:
+value, and it will only ask the first time. For example:
 
     desc "Delete something."
     input(:name) { ask("Delete what?") }
@@ -71,7 +70,7 @@ value, and it will only ask the first time. Full example:
     #    Really delete foo?> y
     #    BAM, foo is gone forever.
 
-An input can be accepted in an argument or splat-argument form by passing
+An input can be accepted as an argument or splat-argument form by passing
 `:argument => true` or `:argument => :splat`:
 
     desc "Deleting something with the given reasons, if any."
@@ -81,7 +80,7 @@ An input can be accepted in an argument or splat-argument form by passing
       puts "Deleting #{input[:name]} because: #{input[:reasons].join ", "}"
     end
 
-This will accept the following forms:
+This will accept the following equivalent forms:
 
     delete foo bar baz
     delete --name foo bar baz
@@ -94,7 +93,7 @@ This will accept the following forms:
 Note that that "--reason" alias accepts the more natural "--reason foo" for
 when there is only a single reason. Also note that flags are parsed before
 arguments, so it doesn't matter if they're tacked on to the end or if they
-appear before them.
+appear before the others.
 
 Because both flags and arguments are defined with the same mechanic, the usage
 string for a command can be auto-generated based on its input metadata, rather
