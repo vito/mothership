@@ -1,0 +1,2 @@
+module Mothership::Progress
+end
