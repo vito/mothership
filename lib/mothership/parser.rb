@@ -78,8 +78,12 @@ class Mothership::Parser
         until args.empty?
           inputs[name] << args.shift
         end
+
       elsif val = args.shift
         inputs[name] = val
+
+      elsif !(arg[:optional] || @command.inputs[name][:default])
+        raise "missing required argument '#{name}'"
       end
     end
 

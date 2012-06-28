@@ -23,6 +23,8 @@ class Mothership::Command
 
       if a[:splat]
         str << " #{name}..."
+      elsif a[:optional]
+        str << " [#{name}]"
       else
         str << " #{name}"
       end
