@@ -41,6 +41,7 @@ class Mothership::Command
 
   def add_input(name, options = {}, &default)
     options[:default] = default if default
+    options[:description] = options.delete(:desc) if options.key?(:desc)
 
     @flags["--#{name.to_s.gsub("_", "-")}"] = name
     if aliases = options[:aliases] || options[:alias]

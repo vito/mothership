@@ -1,6 +1,7 @@
 require "mothership/base"
 require "mothership/command"
 require "mothership/parser"
+require "mothership/help"
 
 class Mothership
   # global options
@@ -43,9 +44,15 @@ class Mothership
   end
 
   desc "Help!"
+  input :command, :argument => :optional
+  input :all, :type => :boolean
   def help(input)
-    @@commands.each do |name, cmd|
-      puts "#{name}: #{cmd.description}"
+    if name = input[:command]
+      Mothership::Help.command_help(@@commands[name.to_sym])
+    elsif Help.has_groups?
+      Mothership::Help.print_help_groups(input[:all])
+    else
+      Mothership::Help.basic_help(@@commands, @@global)
     end
   end
 end
