@@ -4,8 +4,11 @@ require "mothership/parser"
 require "mothership/help"
 
 class Mothership
-  # global options
+  # [Mothership::Command] global options
   @@global = Command.new(self, "(global options)")
+
+  # [Mothershp::Inputs] inputs from global options
+  @@inputs = nil
 
   class << self
     # define a global option
