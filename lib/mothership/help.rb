@@ -3,21 +3,8 @@ module Mothership::Help
   @@tree = {}
 
   class << self
-    def groups
-      @@groups
-    end
-
-    def tree
-      @@tree
-    end
-
     def has_groups?
       !@@groups.empty?
-    end
-
-    def nothing_printable?(group, all = false)
-      group[:members].reject { |_, opts| !all && opts[:hidden] }.empty? &&
-        group[:children].all? { |g| nothing_printable?(g) }
     end
 
     def print_help_groups(all = false)
@@ -160,6 +147,11 @@ module Mothership::Help
     end
 
     private
+
+    def nothing_printable?(group, all = false)
+      group[:members].reject { |_, opts| !all && opts[:hidden] }.empty? &&
+        group[:children].all? { |g| nothing_printable?(g) }
+    end
 
     def add_group(groups, tree, name, desc, *subs)
       members = []
