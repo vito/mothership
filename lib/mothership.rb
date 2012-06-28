@@ -42,17 +42,4 @@ class Mothership
   def option(name, *args)
     @@inputs[name, *args]
   end
-
-  desc "Help!"
-  input :command, :argument => :optional
-  input :all, :type => :boolean
-  def help(input)
-    if name = input[:command]
-      Mothership::Help.command_help(@@commands[name.to_sym])
-    elsif Help.has_groups?
-      Mothership::Help.print_help_groups(input[:all])
-    else
-      Mothership::Help.basic_help(@@commands, @@global)
-    end
-  end
 end

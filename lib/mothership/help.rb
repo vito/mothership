@@ -170,16 +170,31 @@ module Mothership::Help
   end
 end
 
-class << Mothership
-  # add command to help group
-  def group(*names)
-    options =
-      if names.last.is_a? Hash
-        names.pop
-      else
-        {}
-      end
+class Mothership
+  class << self
+    # add command to help group
+    def group(*names)
+      options =
+        if names.last.is_a? Hash
+          names.pop
+        else
+          {}
+        end
 
-    Mothership::Help.add_to_group(@command, names, options)
+      Mothership::Help.add_to_group(@command, names, options)
+    end
+  end
+
+  desc "Help!"
+  input :command, :argument => :optional
+  input :all, :type => :boolean
+  def help(input)
+    if name = input[:command]
+      Mothership::Help.command_help(@@commands[name.to_sym])
+    elsif Help.has_groups?
+      Mothership::Help.print_help_groups(input[:all])
+    else
+      Mothership::Help.basic_help(@@commands, @@global)
+    end
   end
 end
