@@ -29,11 +29,6 @@ class Mothership
     end
   end
 
-  # get value of global option
-  def option(name, *args)
-    @@inputs[name, *args]
-  end
-
   # invoke a command with the given inputs
   def invoke(name, inputs = {})
     @@commands[name].invoke(inputs)
