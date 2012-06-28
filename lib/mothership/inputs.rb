@@ -15,8 +15,10 @@ class Mothership::Inputs
     meta = @command.inputs[name]
 
     val =
-      if meta[:default]
+      if meta[:default].respond_to? :to_proc
         @context.instance_exec(*args, &meta[:default])
+      elsif meta[:default]
+        meta[:default]
       elsif meta[:type] == :boolean
         false
       end
