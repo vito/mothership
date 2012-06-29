@@ -36,5 +36,9 @@ class Mothership
 
       val
     end
+
+    def forget(name)
+      @cache.delete(name)
+    end
   end
 end
