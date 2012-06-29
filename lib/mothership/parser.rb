@@ -39,13 +39,13 @@ class Mothership
           if !argv.empty? && argv.first =~ /^[0-9]+(\.[0-9]*)?$/
             inputs[name] = argv.shift.to_f
           else
-            raise "expected floating value for #{name}"
+            raise TypeMismatch.new(@command.name, name, "floating")
           end
         when :integer, :number, :numeric
           if !argv.empty? && argv.first =~ /^[0-9]+$/
             inputs[name] = argv.shift.to_i
           else
-            raise "expected numeric value for #{name}"
+            raise TypeMismatch.new(@command.name, name, "numeric")
           end
         else
           if argv.empty? || !argv.first.start_with?("-")
@@ -80,11 +80,11 @@ class Mothership
           inputs[name] = val
 
         elsif !(arg[:optional] || @command.inputs[name][:default])
-          raise "missing required argument '#{name}'"
+          raise MissingArgument.new(@command.name, name)
         end
       end
 
-      raise "too many arguments" unless args.empty?
+      raise ExtraArguments.new(@command.name) unless args.empty?
     end
 
     private

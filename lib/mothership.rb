@@ -3,6 +3,7 @@ require "mothership/callbacks"
 require "mothership/command"
 require "mothership/parser"
 require "mothership/help"
+require "mothership/errors"
 
 class Mothership
   # [Mothership::Command] global options
@@ -10,6 +11,9 @@ class Mothership
 
   # [Mothershp::Inputs] inputs from global options
   @@inputs = nil
+
+  # [Fixnum] exit status; reassign as appropriate error code (e.g. 1)
+  @@exit_status = 0
 
   class << self
     # define a global option
@@ -38,8 +42,22 @@ class Mothership
 
       return new.unknown_command(name) unless cmd
 
-      cmd.invoke(Parser.new(cmd).inputs(argv))
+      begin
+        cmd.invoke(Parser.new(cmd).inputs(argv))
+      rescue Mothership::Error => e
+        puts e
+        puts ""
+        Mothership::Help.command_usage(cmd)
+
+        @@exit_status = 1
+      end
+
+      exit @@exit_status
     end
+  end
+
+  def exit_status(num)
+    @@exit_status = num
   end
 
   # get value of global option

@@ -21,7 +21,7 @@ class Mothership
 
     # define an input for the current command or the global command
     def input(name, options = {}, &default)
-      raise "no current command!" unless @command
+      raise "no current command" unless @command
 
       @command.add_input(name, options, &default)
     end

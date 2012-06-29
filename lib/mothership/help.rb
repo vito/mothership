@@ -75,7 +75,7 @@ module Mothership::Help
       end
 
       unless where
-        raise "Unknown help group: #{names.join("/")}"
+        raise "unknown help group: #{names.join("/")}"
       end
 
       where[:members] << [command, options]
