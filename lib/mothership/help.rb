@@ -207,7 +207,7 @@ class Mothership
   input :all, :type => :boolean
   def help(input)
     if name = input[:command]
-      Mothership::Help.command_help(@@commands[name.to_sym])
+      Mothership::Help.command_help(@@commands[name.gsub("-", "_").to_sym])
     elsif Help.has_groups?
       Mothership::Help.print_help_groups(@@global, input[:all])
     else
