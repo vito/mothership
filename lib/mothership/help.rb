@@ -120,26 +120,39 @@ module Mothership::Help
         rev_flags[n] << f
       end
 
-      max_width = 0
       usages = []
 
-      rev_flags.collect do |i, fs|
-        info = cmd.inputs[i]
+      max_bool = 0
+      rev_flags.collect do |name, fs|
+        info = cmd.inputs[name]
 
         usage =
           case info[:type]
           when :boolean
-            (fs + ["--no-#{i}"]).join(", ")
-          when :integer
-            fs.join(", ") + " integer"
+            fs.join(", ")
           else
-            fs.join(", ") + " #{i.to_s.upcase}"
+            fs.collect { |f| "#{f} #{name.to_s.upcase}" }.join(", ")
           end
+
+        if info[:type] == :boolean
+          max_bool = usage.size if usage.size > max_bool
+        end
+
+        usages << [usage, info[:description], info[:type] && name]
+      end
+
+      max_width = 0
+      usages.collect! do |usage, desc, bool|
+        if bool
+          usage = usage.ljust(max_bool) + "   --no-#{bool.to_s.gsub("_", "-")}"
+        end
 
         max_width = usage.size if usage.size > max_width
 
-        usages << [usage, info[:description]]
+        [usage, desc]
       end
+
+      usages.sort! { |a, b| a.first <=> b.first }
 
       usages.each do |u, d|
         if d
