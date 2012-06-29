@@ -103,6 +103,10 @@ module Mothership::Help
     def command_help(cmd)
       puts cmd.description
       puts ""
+      command_usage(cmd)
+    end
+
+    def command_usage(cmd)
       puts "Usage: #{cmd.usage}"
 
       unless cmd.flags.empty?
