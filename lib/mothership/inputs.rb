@@ -14,7 +14,7 @@ class Mothership
     end
 
     def [](name, *args)
-      return @inputs[name] if @inputs.key? name
+      return @inputs[name] if @inputs.key?(name) && @inputs[name] != []
       return @cache[name] if @cache.key? name
 
       meta = @command.inputs[name]
@@ -26,6 +26,8 @@ class Mothership
           meta[:default]
         elsif meta[:type] == :boolean
           false
+        elsif meta[:argument] && meta[:argument][:splat]
+          []
         end
 
       unless meta[:forget]
