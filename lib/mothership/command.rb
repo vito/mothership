@@ -48,23 +48,26 @@ class Mothership
     end
 
     def invoke(inputs)
-      @before.each(&:call)
+      @before.each { |f, c| c.new.instance_exec(&f) }
 
       ctx = @context.new(self)
       action = proc do |*given_inputs|
         ctx.run(given_inputs.first || inputs)
       end
 
-      @around.each do |a|
+      cmd = self
+      @around.each do |a, c|
         before = action
+
+        sub = c.new(cmd)
         action = proc do |*given_inputs|
-          ctx.instance_exec(before, given_inputs.first || inputs, &a)
+          sub.instance_exec(before, given_inputs.first || inputs, &a)
         end
       end
 
       res = ctx.instance_exec(inputs, &action)
 
-      @after.each(&:call)
+      @after.each { |f, c| c.new.instance_exec(&f) }
 
       res
     end
