@@ -1,36 +1,38 @@
-class Mothership::Inputs
-  attr_reader :inputs
+class Mothership
+  class Inputs
+    attr_reader :inputs
 
-  def initialize(command, context, inputs = {})
-    @command = command
-    @context = context
-    @inputs = inputs
-    @cache = {}
-  end
-
-  def given?(name)
-    @inputs.key?(name)
-  end
-
-  def [](name, *args)
-    return @inputs[name] if @inputs.key? name
-    return @cache[name] if @cache.key? name
-
-    meta = @command.inputs[name]
-
-    val =
-      if meta[:default].respond_to? :to_proc
-        @context.instance_exec(*args, &meta[:default])
-      elsif meta[:default]
-        meta[:default]
-      elsif meta[:type] == :boolean
-        false
-      end
-
-    unless meta[:forget]
-      @cache[name] = val
+    def initialize(command, context, inputs = {})
+      @command = command
+      @context = context
+      @inputs = inputs
+      @cache = {}
     end
 
-    val
+    def given?(name)
+      @inputs.key?(name)
+    end
+
+    def [](name, *args)
+      return @inputs[name] if @inputs.key? name
+      return @cache[name] if @cache.key? name
+
+      meta = @command.inputs[name]
+
+      val =
+        if meta[:default].respond_to? :to_proc
+          @context.instance_exec(*args, &meta[:default])
+        elsif meta[:default]
+          meta[:default]
+        elsif meta[:type] == :boolean
+          false
+        end
+
+      unless meta[:forget]
+        @cache[name] = val
+      end
+
+      val
+    end
   end
 end

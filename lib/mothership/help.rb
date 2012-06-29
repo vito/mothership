@@ -1,3 +1,5 @@
+require "mothership/base"
+
 module Mothership::Help
   @@groups = []
   @@tree = {}

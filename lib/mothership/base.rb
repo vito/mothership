@@ -1,3 +1,6 @@
+require "mothership/command"
+require "mothership/inputs"
+
 class Mothership
   # all commands
   @@commands = {}
