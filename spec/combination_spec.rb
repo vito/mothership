@@ -43,7 +43,9 @@ describe Mothership::Parser do
         command([
             [:foo, { :argument => :splat }],
             [:bar, { :argument => true }]]) do |c|
-          proc { inputs(c, "fizz", "buzz") }.should raise_error
+          proc {
+            inputs(c, "fizz", "buzz")
+          }.should raise_error(Mothership::MissingArgument)
         end
       end
 

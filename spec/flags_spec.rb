@@ -33,15 +33,17 @@ describe Mothership::Parser do
 
       it "fails with --foo bar" do
         command(:foo => {:type => :integer}) do |c|
-          # TODO: more specific exception
-          proc { inputs(c, "--foo", "bar") }.should raise_error
+          proc {
+            inputs(c, "--foo", "bar")
+          }.should raise_error(Mothership::TypeMismatch)
         end
       end
 
       it "fails with --foo" do
         command(:foo => {:type => :integer}) do |c|
-          # TODO: more specific exception
-          proc { inputs(c, "--foo") }.should raise_error
+          proc {
+            inputs(c, "--foo")
+          }.should raise_error(Mothership::TypeMismatch)
         end
       end
     end
@@ -67,15 +69,17 @@ describe Mothership::Parser do
 
       it "fails with --foo bar" do
         command(:foo => {:type => :float}) do |c|
-          # TODO: more specific exception
-          proc { inputs(c, "--foo", "bar") }.should raise_error
+          proc {
+            inputs(c, "--foo", "bar")
+          }.should raise_error(Mothership::TypeMismatch)
         end
       end
 
       it "fails with --foo" do
         command(:foo => {:type => :float}) do |c|
-          # TODO: more specific exception
-          proc { inputs(c, "--foo") }.should raise_error
+          proc {
+            inputs(c, "--foo")
+          }.should raise_error(Mothership::TypeMismatch)
         end
       end
     end
