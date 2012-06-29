@@ -29,6 +29,10 @@ class Mothership
       @filters = Hash.new { |h, k| h[k] = [] }
     end
 
+    def inspect
+      "\#<Command '#{@name}'>"
+    end
+
     def usage
       str = @name.to_s.gsub("_", "-")
 
