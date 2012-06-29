@@ -30,7 +30,7 @@ class Mothership
           @@inputs.inputs,
           argv)
 
-      return new(@@commands[:help]).invoke(:help) unless name
+      return new.default_action unless name
 
       cname = name.gsub("-", "_").to_sym
 

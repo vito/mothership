@@ -202,6 +202,10 @@ class Mothership
     end
   end
 
+  def default_action
+    invoke :help
+  end
+
   desc "Help!"
   input :command, :argument => :optional
   input :all, :type => :boolean

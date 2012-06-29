@@ -9,8 +9,8 @@ class Mothership
   @@inputs = nil
 
   # Initialize with the command being executed.
-  def initialize(cmd)
-    @command = cmd
+  def initialize(command = nil)
+    @command = command
   end
 
   class << self
