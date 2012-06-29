@@ -46,7 +46,7 @@ class Mothership
     @@commands[name].invoke(inputs)
   end
 
-  def run_command(inputs)
+  def run(inputs = {})
     send(@command.name, Inputs.new(@command, self, inputs))
   end
 end

@@ -52,7 +52,7 @@ class Mothership
 
       ctx = @context.new(self)
       action = proc do |*given_inputs|
-        ctx.run_command(given_inputs.first || inputs)
+        ctx.run(given_inputs.first || inputs)
       end
 
       @around.each do |a|
