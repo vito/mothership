@@ -35,6 +35,10 @@ class Mothership
 
       @command = nil
     end
+
+    def alias_command(orig, new)
+      @@commands[new] = @@commands[orig]
+    end
   end
 
   # invoke a command with the given inputs
