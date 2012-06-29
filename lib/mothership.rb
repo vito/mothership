@@ -23,14 +23,14 @@ class Mothership
     # arguments and flags can be in any order; all flags will be parsed out
     # first, and the bits left over will be treated as arguments
     def start(argv)
-      return new(@@commands[:help]).invoke(:help) if argv.empty?
-
       @@inputs = Inputs.new(@@global, self, {})
 
       name, *argv =
         Parser.new(@@global).parse_flags(
           @@inputs.inputs,
           argv)
+
+      return new(@@commands[:help]).invoke(:help) unless name
 
       cname = name.gsub("-", "_").to_sym
 
