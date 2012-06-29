@@ -9,10 +9,12 @@ module Mothership::Help
       !@@groups.empty?
     end
 
-    def print_help_groups(all = false)
+    def print_help_groups(global = nil, all = false)
       @@groups.each do |commands|
         print_help_group(commands, all)
       end
+
+      command_options(global)
     end
 
     def print_help_group(group, all = false, indent = 0)
@@ -194,7 +196,7 @@ class Mothership
     if name = input[:command]
       Mothership::Help.command_help(@@commands[name.to_sym])
     elsif Help.has_groups?
-      Mothership::Help.print_help_groups(input[:all])
+      Mothership::Help.print_help_groups(@@global, input[:all])
     else
       Mothership::Help.basic_help(@@commands, @@global)
     end
