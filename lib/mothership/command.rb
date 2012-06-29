@@ -81,6 +81,11 @@ class Mothership
       options[:description] = options.delete(:desc) if options.key?(:desc)
 
       @flags["--#{name.to_s.gsub("_", "-")}"] = name
+
+      if options[:singular]
+        @flags["--#{options[:singular]}"] = name
+      end
+
       if aliases = options[:aliases] || options[:alias]
         Array(aliases).each do |a|
           @flags[a] = name

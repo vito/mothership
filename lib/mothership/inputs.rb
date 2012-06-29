@@ -27,7 +27,11 @@ class Mothership
         elsif meta[:type] == :boolean
           false
         elsif meta[:argument] && meta[:argument][:splat]
-          []
+          if meta[:singular] && single = @inputs[meta[:singular]]
+            [single]
+          else
+            []
+          end
         end
 
       unless meta[:forget]
