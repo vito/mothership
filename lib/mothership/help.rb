@@ -206,6 +206,11 @@ class Mothership
     invoke :help
   end
 
+  def unknown_command(name)
+    puts "Unknown command '#{name}'. See 'help' for available commands."
+    exit_status 1
+  end
+
   desc "Help!"
   input :command, :argument => :optional
   input :all, :type => :boolean

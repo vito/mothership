@@ -36,7 +36,7 @@ class Mothership
 
       cmd = @@commands[cname]
 
-      raise "unknown command '#{name}'" unless cmd
+      return new.unknown_command(name) unless cmd
 
       cmd.invoke(Parser.new(cmd).inputs(argv))
     end
