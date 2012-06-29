@@ -43,8 +43,7 @@ describe Mothership::Parser do
         command([
             [:foo, { :argument => :splat }],
             [:bar, { :argument => true }]]) do |c|
-          inputs(c, "fizz", "buzz").should ==
-            { :foo => ["fizz", "buzz"] }
+          proc { inputs(c, "fizz", "buzz") }.should raise_error
         end
       end
 
