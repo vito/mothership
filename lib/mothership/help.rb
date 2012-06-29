@@ -209,6 +209,11 @@ class Mothership
     if name = input[:command]
       Mothership::Help.command_help(@@commands[name.gsub("-", "_").to_sym])
     elsif Help.has_groups?
+      unless input[:all]
+        puts "Showing basic command set. Pass --all to list all commands."
+        puts ""
+      end
+
       Mothership::Help.print_help_groups(@@global, input[:all])
     else
       Mothership::Help.basic_help(@@commands, @@global)
