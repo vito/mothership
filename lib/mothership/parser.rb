@@ -22,10 +22,6 @@ class Mothership
 
         name = @command.flags[flag]
         unless name
-          #if flag.start_with?("-")
-            #raise "unknown flag: #{flag}"
-          #end
-
           args << flag
           next
         end
