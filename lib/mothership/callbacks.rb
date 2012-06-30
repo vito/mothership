@@ -26,6 +26,15 @@ class Mothership
     def filter(name, tag, &callback)
       @@commands[name].filters[tag] << [callback, self]
     end
+
+    # change an argument's status, i.e. optional, splat, or required
+    def change_argument(name, arg, to)
+      @@commands[name].arguments.each do |a|
+        if a[:name] == arg
+          a[:type] = to
+        end
+      end
+    end
   end
 
   # filter a value through any plugins
