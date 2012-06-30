@@ -64,7 +64,26 @@ class Mothership
       args
     end
 
+    # [FOO] [BAR] FIZZ BUZZ:
+    #   1 2 => :fizz => 1, :buzz => 2
+    #   1 2 3 => :foo => 1, :fizz => 2, :buzz => 3
+    #   1 2 3 4 => :foo => 1, :bar => 2, :fizz => 3, :buzz => 4
     def parse_arguments(inputs, args)
+      total = @command.arguments.size
+      required = 0
+      optional = 0
+      @command.arguments.each do |arg|
+        if arg[:optional]
+          optional += 1
+        elsif arg[:splat]
+          break
+        else
+          required += 1
+        end
+      end
+
+      parse_optionals = args.size - required
+
       @command.arguments.each do |arg|
         name = arg[:name]
         next if inputs.key? name
@@ -76,10 +95,16 @@ class Mothership
             inputs[name] << args.shift
           end
 
+        elsif arg[:optional]
+          if parse_optionals > 0 && val = args.shift
+            inputs[name] = val
+            parse_optionals -= 1
+          end
+
         elsif val = args.shift
           inputs[name] = val
 
-        elsif !(arg[:optional] || @command.inputs[name][:default])
+        elsif !@command.inputs[name][:default]
           raise MissingArgument.new(@command.name, name)
         end
       end
