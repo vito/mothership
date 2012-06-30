@@ -74,18 +74,18 @@ module Mothership::Progress
   end
 
   # override to determine whether to show progress
-  def simple_output?
+  def quiet?
     false
   end
 
   def with_progress(message)
-    unless simple_output?
+    unless quiet?
       print message
       Dots.start!
     end
 
     skipper = Skipper.new do |status, color, callback|
-      unless simple_output?
+      unless quiet?
         Dots.stop!
         puts "... #{c(status, color)}"
       end
@@ -95,13 +95,13 @@ module Mothership::Progress
 
     begin
       res = yield skipper
-      unless simple_output?
+      unless quiet?
         Dots.stop!
         puts "... #{c("OK", :good)}"
       end
       res
     rescue
-      unless simple_output?
+      unless quiet?
         Dots.stop!
         puts "... #{c("FAILED", :error)}"
       end
