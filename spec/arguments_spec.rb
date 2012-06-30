@@ -33,6 +33,56 @@ describe Mothership::Parser do
       end
     end
 
+    describe "optional & required ordering" do
+      it "parses required arguments positioned before optionals first" do
+        command([
+            [:foo, { :argument => true }],
+            [:foo2, { :argument => true }],
+            [:bar, { :argument => :optional }],
+            [:bar2, { :argument => :optional }]]) do |c|
+          inputs(c, "a", "b").should == { :foo => "a", :foo2 => "b" }
+
+          inputs(c, "a", "b", "c").should ==
+            { :foo => "a", :foo2 => "b", :bar => "c" }
+
+          inputs(c, "a", "b", "c", "d").should ==
+            { :foo => "a", :foo2 => "b", :bar => "c", :bar2 => "d" }
+        end
+      end
+
+      it "parses required arguments positioned after optionals first " do
+        command([
+            [:foo, { :argument => :optional }],
+            [:foo2, { :argument => :optional }],
+            [:bar, { :argument => true }],
+            [:bar2, { :argument => true }]]) do |c|
+          inputs(c, "a", "b").should == { :bar => "a", :bar2 => "b" }
+
+          inputs(c, "a", "b", "c").should ==
+            { :bar => "b", :bar2 => "c", :foo => "a" }
+
+          inputs(c, "a", "b", "c", "d").should ==
+            { :bar => "c", :bar2 => "d", :foo => "a", :foo2 => "b" }
+        end
+      end
+
+      it "parses required arguments positioned between optionals first " do
+        command([
+            [:foo, { :argument => true }],
+            [:foo2, { :argument => :optional }],
+            [:bar, { :argument => :optional }],
+            [:bar2, { :argument => true }]]) do |c|
+          inputs(c, "a", "b").should == { :foo => "a", :bar2 => "b" }
+
+          inputs(c, "a", "b", "c").should ==
+            { :foo => "a", :foo2 => "b", :bar2 => "c" }
+
+          inputs(c, "a", "b", "c", "d").should ==
+            { :foo => "a", :foo2 => "b", :bar => "c", :bar2 => "d" }
+        end
+      end
+    end
+
     describe "as flags" do
       it "assigns as the value if given" do
         command(:foo => { :argument => true }) do |c|
