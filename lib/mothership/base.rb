@@ -59,8 +59,4 @@ class Mothership
       unknown_command(name)
     end
   end
-
-  def run(inputs = {})
-    send(@command.name, Inputs.new(@command, self, inputs))
-  end
 end

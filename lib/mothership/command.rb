@@ -53,11 +53,14 @@ class Mothership
     end
 
     def invoke(inputs)
+      input = Inputs.new(self, @context, inputs)
+
       @before.each { |f, c| c.new.instance_exec(&f) }
 
+      name = @name
       ctx = @context.new(self)
       action = proc do |*given_inputs|
-        ctx.run(given_inputs.first || inputs)
+        ctx.send(name, given_inputs.first || input)
       end
 
       cmd = self
@@ -66,11 +69,11 @@ class Mothership
 
         sub = c.new(cmd)
         action = proc do |*given_inputs|
-          sub.instance_exec(before, given_inputs.first || inputs, &a)
+          sub.instance_exec(before, given_inputs.first || input, &a)
         end
       end
 
-      res = ctx.instance_exec(inputs, &action)
+      res = ctx.instance_exec(input, &action)
 
       @after.each { |f, c| c.new.instance_exec(&f) }
 
