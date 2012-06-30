@@ -13,6 +13,14 @@ class Mothership
       @inputs.key?(name)
     end
 
+    def given(name)
+      @inputs[name]
+    end
+
+    def merge(inputs)
+      self.class.new(@command, @context, @inputs.merge(inputs))
+    end
+
     def [](name, *args)
       return @inputs[name] if @inputs.key?(name) && @inputs[name] != []
       return @cache[name] if @cache.key? name
