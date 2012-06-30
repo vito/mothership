@@ -39,9 +39,10 @@ class Mothership
       @arguments.each do |a|
         name = a[:name].to_s.upcase
 
-        if a[:splat]
+        case a[:type]
+        when :splat
           str << " #{name}..."
-        elsif a[:optional]
+        when :optional
           str << " [#{name}]"
         else
           str << " #{name}"
@@ -93,23 +94,21 @@ class Mothership
       end
 
       # :argument => true means accept as single argument
-      # :argument => :foo is shorthand for :argument => {:foo => true}
+      # :argument => :foo is shorthand for :argument => {:type => :foo}
       if opts = options[:argument]
-        arg =
+        type =
           case opts
           when true
-            {}
+            :normal
           when Symbol
-            {opts => true}
-          when Hash
             opts
+          when Hash
+            opts[:type]
           end
 
-        arg[:name] = name
+        options[:argument] = type
 
-        options[:argument] = arg
-
-        @arguments << arg
+        @arguments << { :name => name, :type => type }
       end
 
       @inputs[name] = options

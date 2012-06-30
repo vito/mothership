@@ -52,7 +52,7 @@ class Mothership
             arg = argv.shift || ""
 
             inputs[name] =
-              if input[:argument] && input[:argument][:splat]
+              if input[:argument] == :splat
                 arg.split(",")
               else
                 arg
@@ -73,9 +73,10 @@ class Mothership
       required = 0
       optional = 0
       @command.arguments.each do |arg|
-        if arg[:optional]
+        case arg[:type]
+        when :optional
           optional += 1
-        elsif arg[:splat]
+        when :splat
           break
         else
           required += 1
@@ -88,24 +89,26 @@ class Mothership
         name = arg[:name]
         next if inputs.key? name
 
-        if arg[:splat]
+        case arg[:type]
+        when :splat
           inputs[name] = []
 
           until args.empty?
             inputs[name] << args.shift
           end
 
-        elsif arg[:optional]
+        when :optional
           if parse_optionals > 0 && val = args.shift
             inputs[name] = val
             parse_optionals -= 1
           end
 
-        elsif val = args.shift
-          inputs[name] = val
-
-        elsif !@command.inputs[name][:default]
-          raise MissingArgument.new(@command.name, name)
+        else
+          if val = args.shift
+            inputs[name] = val
+          elsif !@command.inputs[name][:default]
+            raise MissingArgument.new(@command.name, name)
+          end
         end
       end
 
