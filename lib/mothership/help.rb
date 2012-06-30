@@ -142,7 +142,7 @@ module Mothership::Help
           max_bool = usage.size if usage.size > max_bool
         end
 
-        usages << [usage, info[:description], info[:type] && name]
+        usages << [usage, info[:description], info[:type] == :boolean && name]
       end
 
       max_width = 0
