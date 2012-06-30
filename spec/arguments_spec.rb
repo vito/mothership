@@ -66,7 +66,7 @@ describe Mothership::Parser do
         end
       end
 
-      it "parses required arguments positioned between optionals first " do
+      it "parses required arguments positioned around optionals first " do
         command([
             [:foo, { :argument => true }],
             [:foo2, { :argument => :optional }],
@@ -76,6 +76,22 @@ describe Mothership::Parser do
 
           inputs(c, "a", "b", "c").should ==
             { :foo => "a", :foo2 => "b", :bar2 => "c" }
+
+          inputs(c, "a", "b", "c", "d").should ==
+            { :foo => "a", :foo2 => "b", :bar => "c", :bar2 => "d" }
+        end
+      end
+
+      it "parses required arguments positioned between optionals first " do
+        command([
+            [:foo, { :argument => :optional }],
+            [:foo2, { :argument => true }],
+            [:bar, { :argument => true }],
+            [:bar2, { :argument => :optional }]]) do |c|
+          inputs(c, "a", "b").should == { :foo2 => "a", :bar => "b" }
+
+          inputs(c, "a", "b", "c").should ==
+            { :foo => "a", :foo2 => "b", :bar => "c" }
 
           inputs(c, "a", "b", "c", "d").should ==
             { :foo => "a", :foo2 => "b", :bar => "c", :bar2 => "d" }
