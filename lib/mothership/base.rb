@@ -41,6 +41,16 @@ class Mothership
     end
   end
 
+  def execute(cmd, argv)
+    cmd.invoke(Parser.new(cmd).inputs(argv))
+  rescue Mothership::Error => e
+    puts e
+    puts ""
+    Mothership::Help.command_usage(cmd)
+
+    @@exit_status = 1
+  end
+
   # invoke a command with the given inputs
   def invoke(name, inputs = {})
     @@commands[name].invoke(inputs)

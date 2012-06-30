@@ -34,28 +34,22 @@ class Mothership
           @@inputs.inputs,
           argv)
 
-      return new.default_action unless name
+      app = new
 
-      cname = name.gsub("-", "_").to_sym
+      return app.default_action unless name
 
-      cmd = @@commands[cname]
+      cmdname = name.gsub("-", "_").to_sym
 
-      return new.unknown_command(name) unless cmd
+      cmd = @@commands[cmdname]
+      return app.unknown_command(cmdname) unless cmd
 
-      begin
-        cmd.invoke(Parser.new(cmd).inputs(argv))
-      rescue Mothership::Error => e
-        puts e
-        puts ""
-        Mothership::Help.command_usage(cmd)
-
-        @@exit_status = 1
-      end
+      app.execute(cmd, argv)
 
       exit @@exit_status
     end
   end
 
+  # set the exit status
   def exit_status(num)
     @@exit_status = num
   end
