@@ -133,22 +133,24 @@ module Mothership::Help
         usage =
           case info[:type]
           when :boolean
-            fs.join(", ")
+            fs.sort.join(", ")
           else
-            fs.collect { |f| "#{f} #{name.to_s.upcase}" }.join(", ")
+            fs.sort.collect { |f| "#{f} #{name.to_s.upcase}" }.join(", ")
           end
 
-        if info[:type] == :boolean
-          max_bool = usage.size if usage.size > max_bool
-        end
+        say_no =
+          if info[:type] == :boolean
+            max_bool = usage.size if usage.size > max_bool
+            "--no-#{name.to_s.gsub("_", "-")}"
+          end
 
-        usages << [usage, info[:description], info[:type] == :boolean && name]
+        usages << [usage, info[:description], say_no]
       end
 
       max_width = 0
-      usages.collect! do |usage, desc, bool|
-        if bool
-          usage = usage.ljust(max_bool) + "   --no-#{bool.to_s.gsub("_", "-")}"
+      usages.collect! do |usage, desc, bool_no|
+        if bool_no
+          usage = usage.ljust(max_bool) + "   #{bool_no}"
         end
 
         max_width = usage.size if usage.size > max_width
@@ -160,7 +162,7 @@ module Mothership::Help
 
       usages.each do |u, d|
         if d
-          puts "  #{u.ljust(max_width)}   #{d}"
+          puts "  #{u.ljust(max_width)}    #{d}"
         else
           puts "  #{u}"
         end
