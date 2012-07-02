@@ -126,36 +126,30 @@ module Mothership::Help
 
       usages = []
 
-      max_bool = 0
+      max_width = 0
       rev_flags.collect do |name, fs|
         info = cmd.inputs[name]
 
-        usage =
-          case info[:type]
-          when :boolean
-            fs.sort.join(", ")
-          else
-            fs.sort.collect { |f| "#{f} #{name.to_s.upcase}" }.join(", ")
-          end
+        flag = name.to_s.gsub("_", "-")
 
-        say_no =
-          if info[:type] == :boolean
-            max_bool = usage.size if usage.size > max_bool
-            "--no-#{name.to_s.gsub("_", "-")}"
-          end
+        full = fs.delete "--#{flag}"
 
-        usages << [usage, info[:description], say_no]
-      end
+        short = fs.find { |x| x =~ /^-.$/ }
+        fs.delete short if short
 
-      max_width = 0
-      usages.collect! do |usage, desc, bool_no|
-        if bool_no
-          usage = usage.ljust(max_bool) + "   #{bool_no}"
+        if info[:type] == :boolean && info[:default]
+          full = "--[no-]#{flag}"
+        end
+
+        usage = "#{short ? short + "," : "   "} #{([full] + fs).join ", "}"
+
+        unless info[:type] == :boolean
+          usage << " #{name.to_s.upcase}"
         end
 
         max_width = usage.size if usage.size > max_width
 
-        [usage, desc]
+        usages << [usage, info[:description]]
       end
 
       usages.sort! { |a, b| a.first <=> b.first }
