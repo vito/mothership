@@ -21,6 +21,15 @@ class Mothership
       self.class.new(@command, @context, @inputs.merge(inputs))
     end
 
+    def without(*names)
+      inputs = @inputs.dup
+      names.each do |n|
+        inputs.delete(n)
+      end
+
+      self.class.new(@command, @context, inputs)
+    end
+
     def [](name, *args)
       return @inputs[name] if @inputs.key?(name) && @inputs[name] != []
       return @cache[name] if @cache.key? name
