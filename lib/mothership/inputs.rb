@@ -27,6 +27,8 @@ class Mothership
 
       meta = @command.inputs[name]
 
+      return unless meta
+
       val =
         if meta[:default].respond_to? :to_proc
           @context.instance_exec(*args, &meta[:default])
