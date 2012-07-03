@@ -27,7 +27,7 @@ class Mothership
     # arguments and flags can be in any order; all flags will be parsed out
     # first, and the bits left over will be treated as arguments
     def start(argv)
-      @@inputs = Inputs.new(@@global, self, {})
+      @@inputs = Inputs.new(@@global)
 
       name, *argv =
         Parser.new(@@global).parse_flags(
@@ -56,7 +56,7 @@ class Mothership
 
   # get value of global option
   def option(name, *args)
-    @@inputs[name, *args]
+    @@inputs.get(name, self, *args)
   end
 
   # test if an option was explicitly provided

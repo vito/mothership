@@ -2,7 +2,7 @@ class Mothership
   class Inputs
     attr_reader :inputs
 
-    def initialize(command, context, inputs = {})
+    def initialize(command, context = nil, inputs = {})
       @command = command
       @context = context
       @inputs = inputs
@@ -31,7 +31,12 @@ class Mothership
     end
 
     def [](name, *args)
+      get(name, @context, *args)
+    end
+
+    def get(name, context, *args)
       return @inputs[name] if @inputs.key?(name) && @inputs[name] != []
+
       return @cache[name] if @cache.key? name
 
       meta = @command.inputs[name]
@@ -40,7 +45,11 @@ class Mothership
 
       val =
         if meta[:default].respond_to? :to_proc
-          @context.instance_exec(*args, &meta[:default])
+          unless context
+            raise "no context for input request"
+          end
+
+          context.instance_exec(*args, &meta[:default])
         elsif meta[:default]
           meta[:default]
         elsif meta[:type] == :boolean
