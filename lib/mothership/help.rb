@@ -144,7 +144,7 @@ module Mothership::Help
         usage = "#{short ? short + "," : "   "} #{([full] + fs).join ", "}"
 
         unless info[:type] == :boolean
-          usage << " #{name.to_s.upcase}"
+          usage << " #{(info[:value] || name).to_s.upcase}"
         end
 
         max_width = usage.size if usage.size > max_width

@@ -37,7 +37,7 @@ class Mothership
       str = @name.to_s.gsub("_", "-")
 
       @arguments.each do |a|
-        name = a[:name].to_s.upcase
+        name = (a[:value] || a[:name]).to_s.upcase
 
         case a[:type]
         when :splat
@@ -111,7 +111,11 @@ class Mothership
 
         options[:argument] = type
 
-        @arguments << { :name => name, :type => type }
+        @arguments <<
+          { :name => name,
+            :type => type,
+            :value => options[:value]
+          }
       end
 
       @inputs[name] = options
