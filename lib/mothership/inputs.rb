@@ -42,8 +42,14 @@ class Mothership
 
       if @inputs.key?(name) && @inputs[name] != []
         val =
-          if meta[:from_given]
-            @context.instance_exec(@inputs[name], *args, &meta[:from_given])
+          if convert = meta[:from_given]
+            if @inputs[name].is_a?(Array)
+              @inputs[name].collect do |i|
+                @context.instance_exec(i, *args, &convert)
+              end
+            else
+              @context.instance_exec(@inputs[name], *args, &convert)
+            end
           else
             @inputs[name]
           end
