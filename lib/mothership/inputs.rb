@@ -35,13 +35,21 @@ class Mothership
     end
 
     def get(name, context, *args)
-      return @inputs[name] if @inputs.key?(name) && @inputs[name] != []
-
       return @cache[name] if @cache.key? name
 
       meta = @command.inputs[name]
-
       return unless meta
+
+      if @inputs.key?(name) && @inputs[name] != []
+        val =
+          if meta[:from_given]
+            @context.instance_exec(@inputs[name], *args, &meta[:from_given])
+          else
+            @inputs[name]
+          end
+
+        return @cache[name] = val
+      end
 
       val =
         if meta[:default].respond_to? :to_proc
