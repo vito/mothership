@@ -29,11 +29,16 @@ class Mothership
 
     # change an argument's status, i.e. optional, splat, or required
     def change_argument(name, arg, to)
+      changed = false
+
       @@commands[name].arguments.each do |a|
         if a[:name] == arg
           a[:type] = to
+          changed = true
         end
       end
+
+      changed
     end
   end
 
