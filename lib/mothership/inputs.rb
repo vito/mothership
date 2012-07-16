@@ -85,6 +85,7 @@ class Mothership
 
     def forget(name)
       @cache.delete(name)
+      @inputs.delete(name)
     end
   end
 end
