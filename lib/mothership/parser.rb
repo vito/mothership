@@ -124,7 +124,7 @@ class Mothership
         end
       end
 
-      raise ExtraArguments.new(@command.name) unless args.empty?
+      raise ExtraArguments.new(@command.name, args) unless args.empty?
     end
 
     private

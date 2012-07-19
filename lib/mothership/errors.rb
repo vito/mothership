@@ -14,12 +14,13 @@ class Mothership
   end
 
   class ExtraArguments < Error
-    def initialize(cmd)
+    def initialize(cmd, extra)
       @command = cmd
+      @extra = extra
     end
 
     def to_s
-      "#{@command}: too many arguments"
+      "#{@command}: too many arguments; extra: #{@extra.join(" ")}"
     end
   end
 
