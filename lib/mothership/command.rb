@@ -4,7 +4,7 @@ class Mothership
   class Command
     attr_accessor :name, :description
 
-    attr_reader :inputs, :arguments, :flags
+    attr_reader :context, :inputs, :arguments, :flags
 
     attr_reader :before, :after, :around, :filters
 
