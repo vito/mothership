@@ -14,14 +14,26 @@ class Mothership
       inputs
     end
 
-    def parse_flags(inputs, argv)
+    def parse_flags(inputs, argv, find_in = nil)
+      local = nil
       args = []
 
       until argv.empty?
         flag = normalize_flag(argv.shift, argv)
 
-        name = @command.flags[flag]
+        name = local && local.flags[flag] || @command.flags[flag]
         unless name
+          # assume first argument is subcommand
+          if args.empty? && find_in && !local
+            local = find_in[flag.to_sym]
+          end
+
+          args << flag
+          next
+        end
+
+        # skip flags defined by the local cmd
+        if local && local.inputs[name]
           args << flag
           next
         end

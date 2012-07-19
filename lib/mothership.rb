@@ -32,7 +32,8 @@ class Mothership
       name, *argv =
         Parser.new(@@global).parse_flags(
           @@inputs.inputs,
-          argv)
+          argv,
+          @@commands)
 
       app = new
 
