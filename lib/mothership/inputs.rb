@@ -2,32 +2,34 @@ class Mothership
   class Inputs
     attr_reader :inputs
 
-    def initialize(command, context = nil, inputs = {})
+    def initialize(command, context = nil, given = {}, inputs = {})
       @command = command
       @context = context
+      @given = given
       @inputs = inputs
-      @cache = {}
     end
 
     def given?(name)
-      @inputs.key?(name)
+      @given.key?(name)
     end
 
     def given(name)
-      @inputs[name]
+      @given[name]
     end
 
     def merge(inputs)
-      self.class.new(@command, @context, @inputs.merge(inputs))
+      self.class.new(@command, @context, @given, @inputs.merge(inputs))
     end
 
     def without(*names)
+      given = @given.dup
       inputs = @inputs.dup
       names.each do |n|
+        given.delete(n)
         inputs.delete(n)
       end
 
-      self.class.new(@command, @context, inputs)
+      self.class.new(@command, @context, given, inputs)
     end
 
     def [](name, *args)
@@ -35,57 +37,66 @@ class Mothership
     end
 
     def get(name, context, *args)
-      return @cache[name] if @cache.key? name
+      return @inputs[name] if @inputs.key?(name)
 
       meta = @command.inputs[name]
       return unless meta
 
-      if @inputs.key?(name) && @inputs[name] != []
-        val =
-          if convert = meta[:from_given]
-            if @inputs[name].is_a?(Array)
-              @inputs[name].collect do |i|
-                @context.instance_exec(i, *args, &convert)
-              end
-            else
-              @context.instance_exec(@inputs[name], *args, &convert)
-            end
-          else
-            @inputs[name]
-          end
+      singular = meta[:singular]
+      return @inputs[name] = [@inputs[singular]] if @inputs.key?(singular)
 
-        return @cache[name] = val
+      given = @given[name] if @given.key?(name)
+
+      # value given; convert if needed
+      if given && given != []
+        return @inputs[name] = convert_given(meta, context, given, *args)
       end
 
-      val =
-        if meta[:default].respond_to? :to_proc
-          unless context
-            raise "no context for input request"
-          end
-
-          context.instance_exec(*args, &meta[:default])
-        elsif meta[:default]
-          meta[:default]
-        elsif meta[:type] == :boolean
-          false
-        elsif meta[:argument] == :splat
-          if meta[:singular] && single = @inputs[meta[:singular]]
-            [single]
-          else
-            []
-          end
-        end
+      # no value given; set as default
+      val = default_for(meta, context, *args)
 
       unless meta[:forget]
-        @cache[name] = val
+        @inputs[name] = val
       end
 
       val
     end
 
     def forget(name)
-      @cache.delete(name)
+      @given.delete(name)
       @inputs.delete(name)
+    end
+
+    private
+
+    def convert_given(meta, context, given, *args)
+      if convert = meta[:from_given]
+        if given.is_a?(Array)
+          given.collect do |i|
+            context.instance_exec(i, *args, &convert)
+          end
+        else
+          context.instance_exec(given, *args, &convert)
+        end
+      else
+        given
+      end
+    end
+
+    def default_for(meta, context, *args)
+      if meta.key?(:default)
+        default = meta[:default]
+
+        if default.respond_to? :to_proc
+          context.instance_exec(*args, &default)
+        else
+          default
+        end
+      elsif meta[:type] == :boolean
+        false
+      elsif meta[:argument] == :splat
+        []
+      end
     end
   end
 end

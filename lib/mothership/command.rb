@@ -52,12 +52,12 @@ class Mothership
       str
     end
 
-    def invoke(inputs)
+    def invoke(given, inputs = {})
       @before.each { |f, c| c.new.instance_exec(&f) }
 
       name = @name
       ctx = @context.new(self)
-      input = Inputs.new(self, ctx, inputs)
+      input = Inputs.new(self, ctx, given, inputs)
 
       action = proc do |*given_inputs|
         ctx.send(name, given_inputs.first || input)

@@ -54,7 +54,7 @@ class Mothership
   # invoke a command with the given inputs
   def invoke(name, inputs = {})
     if cmd = @@commands[name]
-      cmd.invoke(inputs)
+      cmd.invoke({}, inputs)
     else
       unknown_command(name)
     end
