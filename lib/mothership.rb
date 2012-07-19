@@ -46,7 +46,12 @@ class Mothership
 
       app.execute(cmd, argv)
 
-      exit @@exit_status
+      code = @@exit_status
+
+      # reset exit status
+      @@exit_status = 0
+
+      exit code
     end
   end
 
