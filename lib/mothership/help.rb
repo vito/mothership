@@ -106,17 +106,17 @@ module Mothership::Help
       command_usage(cmd)
     end
 
-    def command_usage(cmd)
-      puts "Usage: #{cmd.usage}"
+    def command_usage(cmd, io = $stdout)
+      io.puts "Usage: #{cmd.usage}"
 
       unless cmd.flags.empty?
-        puts ""
-        command_options(cmd)
+        io.puts ""
+        command_options(cmd, io)
       end
     end
 
-    def command_options(cmd)
-      puts "Options:"
+    def command_options(cmd, io = $stdout)
+      io.puts "Options:"
 
       rev_flags = Hash.new { |h, k| h[k] = [] }
 
@@ -156,9 +156,9 @@ module Mothership::Help
 
       usages.each do |u, d|
         if d
-          puts "  #{u.ljust(max_width)}    #{d}"
+          io.puts "  #{u.ljust(max_width)}    #{d}"
         else
-          puts "  #{u}"
+          io.puts "  #{u}"
         end
       end
     end
@@ -207,7 +207,7 @@ class Mothership
   end
 
   def unknown_command(name)
-    puts "Unknown command '#{name}'. See 'help' for available commands."
+    $stderr.puts "Unknown command '#{name}'. See 'help' for available commands."
     exit_status 1
   end
 

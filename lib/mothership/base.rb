@@ -44,11 +44,11 @@ class Mothership
   def execute(cmd, argv)
     cmd.invoke(Parser.new(cmd).inputs(argv))
   rescue Mothership::Error => e
-    puts e
-    puts ""
-    Mothership::Help.command_usage(cmd)
+    $stderr.puts e
+    $stderr.puts ""
+    Mothership::Help.command_usage(cmd, $stderr)
 
-    @@exit_status = 1
+    exit_status 1
   end
 
   # invoke a command with the given inputs
