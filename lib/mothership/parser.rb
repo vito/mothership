@@ -25,7 +25,7 @@ class Mothership
         unless name
           # assume first argument is subcommand
           if args.empty? && find_in && !local
-            local = find_in[flag.to_sym]
+            local = find_in[flag.gsub("-", "_").to_sym]
           end
 
           args << flag
