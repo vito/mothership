@@ -10,15 +10,19 @@ class Mothership
     end
 
     def given?(name)
-      @given.key?(name)
+      @inputs.key?(name) || @given.key?(name)
     end
 
     def given(name)
-      @given[name]
+      @inputs[name] || @given[name]
     end
 
     def merge(inputs)
       self.class.new(@command, @context, @given, @inputs.merge(inputs))
+    end
+
+    def merge_given(inputs)
+      self.class.new(@command, @context, @given.merge(inputs), @inputs)
     end
 
     def without(*names)
@@ -46,6 +50,7 @@ class Mothership
       return @inputs[name] = [@inputs[singular]] if @inputs.key?(singular)
 
       given = @given[name] if @given.key?(name)
+      given ||= [@given[singular]] if @given.key?(singular)
 
       # value given; convert if needed
       if given && given != []
