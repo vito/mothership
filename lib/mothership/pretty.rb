@@ -71,12 +71,15 @@ module Mothership::Pretty
 
     return str unless color
 
-    "\e[#{bright ? 9 : 3}#{COLOR_CODES[color]}m#{str}\e[0m"
+    code = "\e[#{bright ? 9 : 3}#{COLOR_CODES[color]}m"
+    "#{code}#{str.gsub("\e[0m", "\e[0m#{code}")}\e[0m"
   end
 
   # bold text
   def b(str)
     return str unless color?
-    "\e[1m#{str}\e[0m"
+
+    code = "\e[1m"
+    "#{code}#{str.gsub("\e[0m", "\e[0m#{code}")}\e[0m"
   end
 end
