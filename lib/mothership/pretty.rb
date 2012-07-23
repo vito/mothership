@@ -72,7 +72,7 @@ module Mothership::Pretty
     return str unless color
 
     code = "\e[#{bright ? 9 : 3}#{COLOR_CODES[color]}m"
-    "#{code}#{str.gsub("\e[0m", "\e[0m#{code}")}\e[0m"
+    "#{code}#{str.to_s.gsub("\e[0m", "\e[0m#{code}")}\e[0m"
   end
 
   # bold text
@@ -80,6 +80,6 @@ module Mothership::Pretty
     return str unless color?
 
     code = "\e[1m"
-    "#{code}#{str.gsub("\e[0m", "\e[0m#{code}")}\e[0m"
+    "#{code}#{str.to_s.gsub("\e[0m", "\e[0m#{code}")}\e[0m"
   end
 end
