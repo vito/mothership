@@ -33,9 +33,7 @@ module Mothership::Pretty
     :number => :green,
     :prompt => :blue,
     :yes => :green,
-    :no => :red,
-    :dim => :black,
-    :default => :black
+    :no => :red
   }
 
   private
@@ -80,6 +78,14 @@ module Mothership::Pretty
     return str unless color?
 
     code = "\e[1m"
+    "#{code}#{str.to_s.gsub("\e[0m", "\e[0m#{code}")}\e[0m"
+  end
+
+  # dim text
+  def d(str)
+    return str unless color?
+
+    code = "\e[2m"
     "#{code}#{str.to_s.gsub("\e[0m", "\e[0m#{code}")}\e[0m"
   end
 end
