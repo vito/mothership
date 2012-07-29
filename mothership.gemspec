@@ -6,8 +6,8 @@ Gem::Specification.new do |s|
   s.name        = "mothership"
   s.version     = Mothership::VERSION
   s.authors     = ["Alex Suraci"]
-  s.email       = ["asuraci@vmware.com"]
-  s.homepage    = "http://cloudfoundry.com/"
+  s.email       = ["suraci.alex@gmail.com"]
+  s.homepage    = "https://github.com/vito/mothership"
   s.summary     = %q{
     Command-line library for big honkin' CLI apps.
   }
