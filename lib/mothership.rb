@@ -10,7 +10,7 @@ class Mothership
   @@global = Command.new(self, "(global options)")
 
   # [Mothershp::Inputs] inputs from global options
-  @@inputs = nil
+  @@inputs = Inputs.new(@@global)
 
   # [Fixnum] exit status; reassign as appropriate error code (e.g. 1)
   @@exit_status = 0
@@ -27,8 +27,6 @@ class Mothership
     # arguments and flags can be in any order; all flags will be parsed out
     # first, and the bits left over will be treated as arguments
     def start(argv)
-      @@inputs = Inputs.new(@@global)
-
       name, *argv =
         Parser.new(@@global).parse_flags(
           @@inputs.inputs,
