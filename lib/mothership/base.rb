@@ -51,10 +51,10 @@ class Mothership
     exit_status 1
   end
 
-  # invoke a command with the given inputs
-  def invoke(name, inputs = {})
+  # invoke a command with inputs
+  def invoke(name, inputs = {}, given = {})
     if cmd = @@commands[name]
-      cmd.invoke({}, inputs)
+      cmd.invoke(given, inputs)
     else
       unknown_command(name)
     end
