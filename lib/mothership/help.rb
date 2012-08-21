@@ -207,7 +207,7 @@ class Mothership
   end
 
   def unknown_command(name)
-    $stderr.print "Unknown command '#{name.gsub("_", "-")}'. "
+    $stderr.print "Unknown command '#{name.to_s.gsub("_", "-")}'. "
     $stderr.puts "See 'help' for available commands."
     exit_status 1
   end
