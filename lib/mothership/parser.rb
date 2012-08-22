@@ -1,20 +1,21 @@
 class Mothership
   class Parser
-    def initialize(command)
+    attr_reader :given
+
+    def initialize(command, given = {})
       @command = command
+      @given = given
     end
 
-    def inputs(argv)
-      inputs = {}
+    def parse_argv(argv)
+      args = parse_flags(argv.dup)
 
-      args = parse_flags(inputs, argv.dup)
+      parse_arguments(args)
 
-      parse_arguments(inputs, args)
-
-      inputs
+      @given
     end
 
-    def parse_flags(inputs, argv, find_in = nil)
+    def parse_flags(argv, find_in = nil)
       local = nil
       args = []
 
@@ -43,19 +44,19 @@ class Mothership
         case input[:type]
         when :bool, :boolean
           if argv.first == "false" || argv.first == "true"
-            inputs[name] = argv.shift == "true"
+            @given[name] = argv.shift == "true"
           else
-            inputs[name] = true
+            @given[name] = true
           end
         when :float, :floating
           if !argv.empty? && argv.first =~ /^[0-9]+(\.[0-9]*)?$/
-            inputs[name] = argv.shift.to_f
+            @given[name] = argv.shift.to_f
           else
             raise TypeMismatch.new(@command.name, name, "floating")
           end
         when :integer, :number, :numeric
           if !argv.empty? && argv.first =~ /^[0-9]+$/
-            inputs[name] = argv.shift.to_i
+            @given[name] = argv.shift.to_i
           else
             raise TypeMismatch.new(@command.name, name, "numeric")
           end
@@ -63,7 +64,7 @@ class Mothership
           if argv.empty? || !argv.first.start_with?("-")
             arg = argv.shift || ""
 
-            inputs[name] =
+            @given[name] =
               if input[:argument] == :splat
                 arg.split(",")
               else
@@ -80,7 +81,7 @@ class Mothership
     #   1 2 => :fizz => 1, :buzz => 2
     #   1 2 3 => :foo => 1, :fizz => 2, :buzz => 3
     #   1 2 3 4 => :foo => 1, :bar => 2, :fizz => 3, :buzz => 4
-    def parse_arguments(inputs, args)
+    def parse_arguments(args)
       total = @command.arguments.size
       required = 0
       optional = 0
@@ -99,25 +100,25 @@ class Mothership
 
       @command.arguments.each do |arg|
         name = arg[:name]
-        next if inputs.key? name
+        next if @given.key? name
 
         case arg[:type]
         when :splat
-          inputs[name] = []
+          @given[name] = []
 
           until args.empty?
-            inputs[name] << args.shift
+            @given[name] << args.shift
           end
 
         when :optional
           if parse_optionals > 0 && val = args.shift
-            inputs[name] = val
+            @given[name] = val
             parse_optionals -= 1
           end
 
         else
           if val = args.shift
-            inputs[name] = val
+            @given[name] = val
           elsif !@command.inputs[name][:default]
             raise MissingArgument.new(@command.name, name)
           end

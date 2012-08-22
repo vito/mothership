@@ -5,12 +5,12 @@ class Mothership
   # all commands
   @@commands = {}
 
-  # parsed global input set
-  @@inputs = nil
+  attr_accessor :input
 
   # Initialize with the command being executed.
-  def initialize(command = nil)
+  def initialize(command = nil, input = nil)
     @command = command
+    @input = input
   end
 
   class << self
@@ -41,8 +41,8 @@ class Mothership
     end
   end
 
-  def execute(cmd, argv)
-    cmd.invoke(Parser.new(cmd).inputs(argv))
+  def execute(cmd, argv, global = {})
+    cmd.invoke({}, Parser.new(cmd).parse_argv(argv), global)
   rescue Mothership::Error => e
     $stderr.puts e
     $stderr.puts ""
@@ -51,10 +51,16 @@ class Mothership
     exit_status 1
   end
 
+  # wrap this with your error handling/etc.
+  def run(name)
+    send(name)
+  end
+
   # invoke a command with inputs
-  def invoke(name, inputs = {}, given = {})
+  def invoke(
+      name, inputs = {}, given = {}, global = @input ? @input.global : {})
     if cmd = @@commands[name]
-      cmd.invoke(given, inputs)
+      cmd.invoke(inputs, given, global)
     else
       unknown_command(name)
     end

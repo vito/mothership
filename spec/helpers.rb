@@ -14,7 +14,7 @@ module MothershipHelpers
   end
 
   def inputs(cmd, *argv)
-    Mothership::Parser.new(cmd).inputs(argv)
+    Mothership::Parser.new(cmd).parse_argv(argv)
   end
 end
 

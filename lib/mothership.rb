@@ -9,9 +9,6 @@ class Mothership
   # [Mothership::Command] global options
   @@global = Command.new(self, "(global options)")
 
-  # [Mothershp::Inputs] inputs from global options
-  @@inputs = Inputs.new(@@global)
-
   # [Fixnum] exit status; reassign as appropriate error code (e.g. 1)
   @@exit_status = 0
 
@@ -27,11 +24,8 @@ class Mothership
     # arguments and flags can be in any order; all flags will be parsed out
     # first, and the bits left over will be treated as arguments
     def start(argv)
-      name, *argv =
-        Parser.new(@@global).parse_flags(
-          @@inputs.inputs,
-          argv,
-          @@commands)
+      global_parser = Parser.new(@@global)
+      name, *argv = global_parser.parse_flags(argv, @@commands)
 
       app = new
 
@@ -42,7 +36,7 @@ class Mothership
       cmd = @@commands[cmdname]
       return app.unknown_command(cmdname) unless cmd
 
-      app.execute(cmd, argv)
+      app.execute(cmd, argv, global_parser.given)
 
       code = @@exit_status
 
@@ -51,20 +45,14 @@ class Mothership
 
       exit code
     end
+
+    def global_option(name)
+      @@global.inputs[name]
+    end
   end
 
   # set the exit status
   def exit_status(num)
     @@exit_status = num
-  end
-
-  # get value of global option
-  def option(name, *args)
-    @@inputs.get(name, self, *args)
-  end
-
-  # test if an option was explicitly provided
-  def option_given?(name)
-    @@inputs.given? name
   end
 end

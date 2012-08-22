@@ -1,12 +1,15 @@
 class Mothership
   class Inputs
-    attr_reader :inputs
+    attr_reader :inputs, :given, :global
 
-    def initialize(command, context = nil, given = {}, inputs = {})
+    def initialize(
+        command, context = nil,
+        inputs = {}, given = {}, global = {})
       @command = command
       @context = context
-      @given = given
       @inputs = inputs
+      @given = given
+      @global = global
     end
 
     def given?(name)
@@ -14,15 +17,19 @@ class Mothership
     end
 
     def given(name)
-      @inputs[name] || @given[name]
+      if @inputs.key?(name)
+        @inputs[name]
+      else
+        @given[name]
+      end
     end
 
     def merge(inputs)
-      self.class.new(@command, @context, @given, @inputs.merge(inputs))
+      self.class.new(@command, @context, @inputs.merge(inputs), @given)
     end
 
     def merge_given(inputs)
-      self.class.new(@command, @context, @given.merge(inputs), @inputs)
+      self.class.new(@command, @context, @inputs, @given.merge(inputs))
     end
 
     def without(*names)
@@ -40,31 +47,32 @@ class Mothership
       get(name, @context, *args)
     end
 
+    # search:
+    # 1. cache
+    # 2. cache, singular
+    # 3. given
+    # 4. given, singular
+    # 5. global
+    # 6. global, singular
     def get(name, context, *args)
       return @inputs[name] if @inputs.key?(name)
 
-      meta = @command.inputs[name]
-      return unless meta
+      if meta = @command.inputs[name]
+        # special case so #invoke can be called with singular-named inputs
+        singular = meta[:singular]
+        return @inputs[name] = [@inputs[singular]] if @inputs.key?(singular)
 
-      singular = meta[:singular]
-      return @inputs[name] = [@inputs[singular]] if @inputs.key?(singular)
-
-      given = @given[name] if @given.key?(name)
-      given ||= [@given[singular]] if @given.key?(singular)
-
-      # value given; convert if needed
-      if given && given != []
-        return @inputs[name] = convert_given(meta, context, given, *args)
+        found, val = find_in(@given, name, meta, context, *args)
       end
 
-      # no value given; set as default
-      val = default_for(meta, context, *args)
-
-      unless meta[:forget]
-        @inputs[name] = val
+      # if not found locally and the default is nil, search globally
+      if !found && val.nil? && meta = Mothership.global_option(name)
+        found, val = find_in(@global, name, meta, context, *args)
       end
 
-      val
+      return val if not found
+
+      @inputs[name] = convert_given(meta, context, val, *args)
     end
 
     def forget(name)
@@ -73,6 +81,24 @@ class Mothership
     end
 
     private
+
+    def find_in(where, name, meta, context, *args)
+      singular = meta[:singular]
+
+      if where.key?(name)
+        [true, where[name]]
+      elsif where.key?(singular)
+        [true, [where[singular]]]
+      else
+        # no value given; set as default
+        val = default_for(meta, context, *args)
+
+        # cache default value
+        @inputs[name] = val unless meta[:forget]
+
+        [false, val]
+      end
+    end
 
     def convert_given(meta, context, given, *args)
       if convert = meta[:from_given]
