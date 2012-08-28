@@ -29,7 +29,10 @@ class Mothership
 
       app = new
 
-      return app.default_action unless name
+      unless name
+        app.input = Inputs.new(nil, @@global, {}, {}, global_parser.given)
+        return app.default_action
+      end
 
       cmdname = name.gsub("-", "_").to_sym
 

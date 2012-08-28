@@ -57,7 +57,7 @@ class Mothership
     def get(name, context, *args)
       return @inputs[name] if @inputs.key?(name)
 
-      if meta = @command.inputs[name]
+      if @command && meta = @command.inputs[name]
         # special case so #invoke can be called with singular-named inputs
         singular = meta[:singular]
         return @inputs[name] = [@inputs[singular]] if @inputs.key?(singular)
