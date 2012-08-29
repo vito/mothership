@@ -25,11 +25,11 @@ class Mothership
     end
 
     def merge(inputs)
-      self.class.new(@command, @context, @inputs.merge(inputs), @given)
+      self.class.new(@command, @context, @inputs.merge(inputs), @given, @global)
     end
 
     def merge_given(inputs)
-      self.class.new(@command, @context, @inputs, @given.merge(inputs))
+      self.class.new(@command, @context, @inputs, @given.merge(inputs), @global)
     end
 
     def without(*names)
@@ -40,7 +40,7 @@ class Mothership
         inputs.delete(n)
       end
 
-      self.class.new(@command, @context, given, inputs)
+      self.class.new(@command, @context, given, inputs, @global)
     end
 
     def [](name, *args)
@@ -63,10 +63,7 @@ class Mothership
         return @inputs[name] = [@inputs[singular]] if @inputs.key?(singular)
 
         found, val = find_in(@given, name, meta, context, *args)
-      end
-
-      # if not found locally and the default is nil, search globally
-      if !found && val.nil? && meta = Mothership.global_option(name)
+      elsif meta = Mothership.global_option(name)
         found, val = find_in(@global, name, meta, context, *args)
       end
 

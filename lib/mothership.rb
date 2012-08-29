@@ -30,7 +30,7 @@ class Mothership
       app = new
 
       unless name
-        app.input = Inputs.new(nil, @@global, {}, {}, global_parser.given)
+        app.input = Inputs.new(@@global, app, global_parser.given)
         return app.default_action
       end
 
