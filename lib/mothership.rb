@@ -28,11 +28,9 @@ class Mothership
       name, *argv = global_parser.parse_flags(argv, @@commands)
 
       app = new
+      app.input = Inputs.new(@@global, app, global_parser.given)
 
-      unless name
-        app.input = Inputs.new(@@global, app, global_parser.given)
-        return app.default_action
-      end
+      return app.default_action unless name
 
       cmdname = name.gsub("-", "_").to_sym
 
