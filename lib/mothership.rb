@@ -27,17 +27,19 @@ class Mothership
       global_parser = Parser.new(@@global)
       name, *argv = global_parser.parse_flags(argv, @@commands)
 
-      app = new
-      app.input = Inputs.new(@@global, app, global_parser.given)
+      global = new
+      global.input = Inputs.new(@@global, global, global_parser.given)
 
-      return app.default_action unless name
+      return global.default_action unless name
 
       cmdname = name.gsub("-", "_").to_sym
 
       cmd = @@commands[cmdname]
-      return app.unknown_command(cmdname) unless cmd
+      return global.unknown_command(cmdname) unless cmd
 
-      app.execute(cmd, argv, global_parser.given)
+      ctx = cmd.context.new
+      ctx.input = global.input
+      ctx.execute(cmd, argv, global_parser.given)
 
       code = @@exit_status
 
