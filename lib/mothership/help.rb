@@ -17,6 +17,22 @@ module Mothership::Help
       command_options(global)
     end
 
+    def unique_commands(commands)
+      uniq_commands = []
+      cmd_index = {}
+
+      commands.each do |cmd|
+        if idx = cmd_index[cmd.name]
+          uniq_commands[idx] = cmd
+        else
+          cmd_index[cmd.name] = uniq_commands.size
+          uniq_commands << cmd
+        end
+      end
+
+      uniq_commands
+    end
+
     def print_help_group(group, all = false, indent = 0)
       return if nothing_printable?(group, all)
 
@@ -34,6 +50,8 @@ module Mothership::Help
 
       print i
       puts group[:description]
+
+      commands = unique_commands(commands)
 
       width = 0
       commands.each do |cmd|
