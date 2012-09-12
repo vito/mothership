@@ -40,6 +40,11 @@ class Mothership
 
       changed
     end
+
+    # add an input/flag to a command
+    def add_input(cmd, name, options = {}, &default)
+      @@commands[cmd].add_input(name, options, &default)
+    end
   end
 
   # filter a value through any plugins
