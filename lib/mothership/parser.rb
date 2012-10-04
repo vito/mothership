@@ -61,16 +61,19 @@ class Mothership
             raise TypeMismatch.new(@command.name, name, "numeric")
           end
         else
-          if argv.empty? || !argv.first.start_with?("-")
-            arg = argv.shift || ""
+          arg =
+            if argv.empty? || argv.first.start_with?("-")
+              ""
+            else
+              argv.shift
+            end
 
-            @given[name] =
-              if input[:argument] == :splat
-                arg.split(",")
-              else
-                arg
-              end
-          end
+          @given[name] =
+            if input[:argument] == :splat
+              arg.split(",")
+            else
+              arg
+            end
         end
       end
 
