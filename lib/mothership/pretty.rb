@@ -62,7 +62,7 @@ module Mothership::Pretty
 
     bright = false
     color = user_colors[type]
-    if color =~ /bright-(.+)/
+    if color.to_s =~ /bright-(.+)/
       bright = true
       color = $1.to_sym
     end
