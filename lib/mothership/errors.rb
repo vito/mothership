@@ -9,7 +9,7 @@ class Mothership
     end
 
     def to_s
-      "#{@command}: missing input '#{@argument}'"
+      "#{@command.display_name}: missing input '#{@argument}'"
     end
   end
 
@@ -20,7 +20,7 @@ class Mothership
     end
 
     def to_s
-      "#{@command}: too many arguments; extra: #{@extra.join(" ")}"
+      "#{@command.display_name}: too many arguments; extra: #{@extra.join(" ")}"
     end
   end
 
@@ -32,7 +32,7 @@ class Mothership
     end
 
     def to_s
-      "#{@command}: expected #{@type} value for #{@input}"
+      "#{@command.display_name}: expected #{@type} value for #{@input}"
     end
   end
 end

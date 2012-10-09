@@ -52,13 +52,13 @@ class Mothership
           if !argv.empty? && argv.first =~ /^[0-9]+(\.[0-9]*)?$/
             @given[name] = argv.shift.to_f
           else
-            raise TypeMismatch.new(@command.name, name, "floating")
+            raise TypeMismatch.new(@command, name, "floating")
           end
         when :integer, :number, :numeric
           if !argv.empty? && argv.first =~ /^[0-9]+$/
             @given[name] = argv.shift.to_i
           else
-            raise TypeMismatch.new(@command.name, name, "numeric")
+            raise TypeMismatch.new(@command, name, "numeric")
           end
         else
           arg =
@@ -105,6 +105,8 @@ class Mothership
         name = arg[:name]
         next if @given.key? name
 
+        input = @command.inputs[name]
+
         case arg[:type]
         when :splat
           @given[name] = []
@@ -122,13 +124,13 @@ class Mothership
         else
           if val = args.shift
             @given[name] = val
-          elsif !@command.inputs[name][:default]
-            raise MissingArgument.new(@command.name, name)
+          elsif !input[:default]
+            raise MissingArgument.new(@command, name)
           end
         end
       end
 
-      raise ExtraArguments.new(@command.name, args) unless args.empty?
+      raise ExtraArguments.new(@command, args) unless args.empty?
     end
 
     private

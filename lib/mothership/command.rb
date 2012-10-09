@@ -33,8 +33,12 @@ class Mothership
       "\#<Command '#{@name}'>"
     end
 
+    def display_name
+      @name.to_s.gsub("_", "-")
+    end
+
     def usage
-      str = @name.to_s.gsub("_", "-")
+      str = display_name
 
       @arguments.each do |a|
         name = (a[:value] || a[:name]).to_s.upcase
