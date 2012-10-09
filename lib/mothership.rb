@@ -14,8 +14,8 @@ class Mothership
 
   class << self
     # define a global option
-    def option(name, options = {}, &default)
-      @@global.add_input(name, options, &default)
+    def option(name, options = {}, &interact)
+      @@global.add_input(name, options, &interact)
     end
 
     # parse argv, by taking the first arg as the command, and the rest as

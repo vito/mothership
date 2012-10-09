@@ -42,8 +42,8 @@ class Mothership
     end
 
     # add an input/flag to a command
-    def add_input(cmd, name, options = {}, &default)
-      @@commands[cmd].add_input(name, options, &default)
+    def add_input(cmd, name, options = {}, &interact)
+      @@commands[cmd].add_input(name, options, &interact)
     end
   end
 

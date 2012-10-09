@@ -41,6 +41,12 @@ class Mothership
 
         input = @command.inputs[name]
 
+        if input[:interact] && argv.first == "_"
+          @given[name] = :interact
+          argv.shift
+          next
+        end
+
         case input[:type]
         when :bool, :boolean
           if argv.first == "false" || argv.first == "true"
@@ -124,7 +130,7 @@ class Mothership
         else
           if val = args.shift
             @given[name] = val
-          elsif !input[:default]
+          elsif !input[:default] && !input[:interact]
             raise MissingArgument.new(@command, name)
           end
         end
@@ -153,6 +159,10 @@ class Mothership
           argv.unshift "false"
         end
 
+        "--#$1"
+
+      when /^--ask-(.+)/
+        argv.unshift "_"
         "--#$1"
 
       # --foo=bar form

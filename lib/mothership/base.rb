@@ -20,10 +20,10 @@ class Mothership
     end
 
     # define an input for the current command or the global command
-    def input(name, options = {}, &default)
+    def input(name, options = {}, &interact)
       raise "no current command" unless @command
 
-      @command.add_input(name, options, &default)
+      @command.add_input(name, options, &interact)
     end
 
     # register a command
@@ -64,5 +64,26 @@ class Mothership
     else
       unknown_command(name)
     end
+  end
+
+  # explicitly perform the interaction of an input
+  #
+  # if no input specified, assume current input and reuse the arguments
+  #
+  # example:
+  #   input(:foo, :default => proc { |foos|
+  #           foos.find { |f| f.name == "XYZ" } ||
+  #             interact
+  #         }) { |foos|
+  #     ask("Foo?", :choices => foos, :display => proc(&:name))
+  #   }
+  def interact(input = nil, *args)
+    unless input
+      input, args = @input.current_input
+    end
+
+    raise "no active input" unless input
+
+    @input.interact(input, *args)
   end
 end

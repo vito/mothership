@@ -155,7 +155,7 @@ module Mothership::Help
         short = fs.find { |x| x =~ /^-.$/ }
         fs.delete short if short
 
-        if info[:type] == :boolean && info[:default]
+        if info[:type] == :boolean && info[:default] == true
           full = "--[no-]#{flag}"
         end
 

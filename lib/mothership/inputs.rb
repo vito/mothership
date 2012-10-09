@@ -2,6 +2,9 @@ class Mothership
   class Inputs
     attr_reader :inputs, :given, :global
 
+    # the input being processed; set during #get
+    attr_reader :current_input
+
     def initialize(
         command, context = nil,
         inputs = {}, given = {}, global = {})
@@ -47,6 +50,19 @@ class Mothership
       get(name, @context, *args)
     end
 
+    def interact(name, *args)
+      meta =
+        if @command
+          @command.inputs[name]
+        else
+          Mothership.global_option(name)
+        end
+
+      if interact = meta[:interact]
+        @context.instance_exec(*args, &interact)
+      end
+    end
+
     # search:
     # 1. cache
     # 2. cache, singular
@@ -56,6 +72,8 @@ class Mothership
     # 6. global, singular
     def get(name, context, *args)
       return @inputs[name] if @inputs.key?(name)
+
+      @current_input = [name, args]
 
       if @command && meta = @command.inputs[name]
         # special case so #invoke can be called with singular-named inputs
@@ -69,7 +87,13 @@ class Mothership
 
       return val if not found
 
-      @inputs[name] = convert_given(meta, context, val, *args)
+      if val == :interact && interact = meta[:interact]
+        @inputs[name] = context.instance_exec(*args, &interact)
+      else
+        @inputs[name] = convert_given(meta, context, val, *args)
+      end
+    ensure
+      @current_input = nil
     end
 
     def forget(name)
@@ -120,6 +144,8 @@ class Mothership
         else
           default
         end
+      elsif interact = meta[:interact]
+        context.instance_exec(*args, &interact)
       elsif meta[:type] == :boolean
         false
       elsif meta[:argument] == :splat

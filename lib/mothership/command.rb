@@ -38,22 +38,22 @@ class Mothership
     end
 
     def usage
-      str = display_name
-
+      args = [display_name]
       @arguments.each do |a|
         name = (a[:value] || a[:name]).to_s.upcase
+        input = @inputs[a[:name]]
 
-        case a[:type]
-        when :splat
-          str << " #{name}..."
-        when :optional
-          str << " [#{name}]"
+        if a[:type] == :splat
+          args << "#{name}..."
+        elsif a[:type] == :optional || input.key?(:default) || \
+                input.key?(:interact)
+          args << "[#{name}]"
         else
-          str << " #{name}"
+          args << name
         end
       end
 
-      str
+      args.join(" ")
     end
 
     def invoke(inputs = {}, given = {}, global = {})
@@ -86,8 +86,8 @@ class Mothership
       res
     end
 
-    def add_input(name, options = {}, &default)
-      options[:default] = default if default
+    def add_input(name, options = {}, &interact)
+      options[:interact] = interact if interact
       options[:description] = options.delete(:desc) if options.key?(:desc)
 
       @flags["--#{name.to_s.gsub("_", "-")}"] = name
