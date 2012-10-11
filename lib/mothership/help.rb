@@ -150,16 +150,22 @@ module Mothership::Help
 
         flag = name.to_s.gsub("_", "-")
 
-        full = fs.delete "--#{flag}"
+        # move full form to the front
+        fs.unshift fs.delete("--#{flag}")
 
-        short = fs.find { |x| x =~ /^-.$/ }
-        fs.delete short if short
-
-        if info[:type] == :boolean && info[:default] == true
-          full = "--[no-]#{flag}"
+        if short = fs.find { |x| x =~ /^-.$/ }
+          fs.delete short
         end
 
-        usage = "#{short ? short + "," : "   "} #{([full] + fs).join ", "}"
+        if info[:type] == :boolean && info[:default] == true
+          fs.unshift "--[no-]#{flag}"
+        end
+
+        if info.key?(:default) && info.key?(:interact)
+          fs.unshift "--ask-#{flag}"
+        end
+
+        usage = "#{short ? short + "," : "   "} #{fs.join ", "}"
 
         unless info[:type] == :boolean
           usage << " #{(info[:value] || name).to_s.upcase}"
