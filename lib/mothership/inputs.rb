@@ -73,6 +73,7 @@ class Mothership
     def get(name, context, *args)
       return @inputs[name] if @inputs.key?(name)
 
+      before_input = @current_input
       @current_input = [name, args]
 
       if @command && meta = @command.inputs[name]
@@ -93,7 +94,7 @@ class Mothership
         @inputs[name] = convert_given(meta, context, val, *args)
       end
     ensure
-      @current_input = nil
+      @current_input = before_input
     end
 
     def forget(name)
