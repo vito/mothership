@@ -102,6 +102,10 @@ class Mothership
       @inputs.delete(name)
     end
 
+    def interactive?(name)
+      @given[name] == :interact
+    end
+
     private
 
     def find_in(where, name, meta, context, *args)
