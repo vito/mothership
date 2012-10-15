@@ -157,8 +157,8 @@ module Mothership::Help
           fs.delete short
         end
 
-        if info[:type] == :boolean && info[:default] == true
-          fs.unshift "--[no-]#{flag}"
+        if info[:type] == :boolean && info[:default]
+          fs[0] = "--[no-]#{flag}"
         end
 
         if info.key?(:default) && info.key?(:interact)
