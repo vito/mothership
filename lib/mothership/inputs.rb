@@ -107,7 +107,6 @@ class Mothership
     end
 
     def forget(name)
-      @given.delete(name)
       @inputs.delete(name)
     end
 
