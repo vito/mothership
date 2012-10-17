@@ -43,7 +43,7 @@ class Mothership
         inputs.delete(n)
       end
 
-      self.class.new(@command, @context, given, inputs, @global)
+      self.class.new(@command, @context, inputs, given, @global)
     end
 
     def [](name, *args)
