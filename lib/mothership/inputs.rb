@@ -22,8 +22,8 @@ class Mothership
     def given(name)
       if @inputs.key?(name)
         @inputs[name]
-      else
-        @given[name]
+      elsif (given = @given[name]) != :interact
+        given
       end
     end
 
