@@ -47,7 +47,22 @@ class Mothership
     end
 
     def [](name, *args)
-      get(name, @context, *args)
+      return @inputs[name] if @inputs.key?(name)
+
+      if @command && meta = @command.inputs[name]
+        # special case so #invoke can be called with singular-named inputs
+        singular = meta[:singular]
+
+        if @inputs.key?(singular)
+          return @inputs[name] = [@inputs[singular]]
+        end
+      end
+
+      val = get(name, @context, *args)
+
+      @inputs[name] = val unless meta && meta[:forget]
+
+      val
     end
 
     def interact(name, *args)
@@ -71,16 +86,10 @@ class Mothership
     # 5. global
     # 6. global, singular
     def get(name, context, *args)
-      return @inputs[name] if @inputs.key?(name)
-
       before_input = @current_input
       @current_input = [name, args]
 
       if @command && meta = @command.inputs[name]
-        # special case so #invoke can be called with singular-named inputs
-        singular = meta[:singular]
-        return @inputs[name] = [@inputs[singular]] if @inputs.key?(singular)
-
         found, val = find_in(@given, name, meta, context, *args)
       elsif meta = Mothership.global_option(name)
         found, val = find_in(@global, name, meta, context, *args)
@@ -89,9 +98,9 @@ class Mothership
       return val if not found
 
       if val == :interact && interact = meta[:interact]
-        @inputs[name] = context.instance_exec(*args, &interact)
+        context.instance_exec(*args, &interact)
       else
-        @inputs[name] = convert_given(meta, context, val, *args)
+        convert_given(meta, context, val, *args)
       end
     ensure
       @current_input = before_input
@@ -117,12 +126,7 @@ class Mothership
         [true, [where[singular]]]
       else
         # no value given; set as default
-        val = default_for(meta, context, *args)
-
-        # cache default value
-        @inputs[name] = val unless meta[:forget]
-
-        [false, val]
+        [false, default_for(meta, context, *args)]
       end
     end
 
