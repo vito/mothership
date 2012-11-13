@@ -108,6 +108,7 @@ class Mothership
 
     def forget(name)
       @inputs.delete(name)
+      @given.delete(name)
     end
 
     def interactive?(name)
