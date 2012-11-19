@@ -241,7 +241,11 @@ class Mothership
   input :all, :type => :boolean
   def help
     if name = input[:command]
-      Mothership::Help.command_help(@@commands[name.gsub("-", "_").to_sym])
+      if cmd = @@commands[name.gsub("-", "_").to_sym]
+        Mothership::Help.command_help(cmd)
+      else
+        unknown_command(name)
+      end
     elsif Help.has_groups?
       unless input[:all]
         puts "Showing basic command set. Pass --all to list all commands."
