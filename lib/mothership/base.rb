@@ -14,6 +14,11 @@ class Mothership
   end
 
   class << self
+    # all of the defined commands
+    def commands
+      @@commands
+    end
+
     # start defining a new command with the given description
     def desc(description)
       @command = Command.new(self, description)
