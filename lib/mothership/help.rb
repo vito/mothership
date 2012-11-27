@@ -147,6 +147,7 @@ module Mothership::Help
       max_width = 0
       rev_flags.collect do |name, fs|
         info = cmd.inputs[name]
+        next if info[:hidden]
 
         flag = name.to_s.gsub("_", "-")
 
