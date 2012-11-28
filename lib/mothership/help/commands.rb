@@ -47,9 +47,3 @@ class Mothership
     end
   end
 end
-
-class Mothership::Command
-  def group
-    p Mothership::Help.tree[:apps][:children][:manage]
-  end
-end
