@@ -1,5 +1,4 @@
-require "mothership"
-require "./helpers"
+require "spec_helper"
 
 describe Mothership::Parser do
   describe "combinations" do

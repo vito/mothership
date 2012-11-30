@@ -50,19 +50,19 @@ class Mothership
         case input[:type]
         when :bool, :boolean
           if argv.first == "false" || argv.first == "true"
-            @given[name] = argv.shift == "true"
+            @given[name] = argv.shift
           else
-            @given[name] = true
+            @given[name] = "true"
           end
         when :float, :floating
           if !argv.empty? && argv.first =~ /^[0-9]+(\.[0-9]*)?$/
-            @given[name] = argv.shift.to_f
+            @given[name] = argv.shift
           else
             raise TypeMismatch.new(@command, name, "floating")
           end
         when :integer, :number, :numeric
           if !argv.empty? && argv.first =~ /^[0-9]+$/
-            @given[name] = argv.shift.to_i
+            @given[name] = argv.shift
           else
             raise TypeMismatch.new(@command, name, "numeric")
           end
