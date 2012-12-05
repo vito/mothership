@@ -28,7 +28,7 @@ class Mothership
       name, *argv = global_parser.parse_flags(argv, @@commands)
 
       global = new
-      global.input = Inputs.new(@@global, global, global_parser.given)
+      global.input = Inputs.new(@@global, global, global_parser)
 
       return global.default_action unless name
 

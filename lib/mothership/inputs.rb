@@ -66,7 +66,7 @@ class Mothership
         end
       end
 
-      val = get(name, @context, *args)
+      found, val = get(name, @context, *args)
 
       @inputs[name] = val unless meta && meta[:forget]
 
@@ -99,16 +99,18 @@ class Mothership
 
       if @command && meta = @command.inputs[name]
         found, val = find_in(@given, name, meta, context, *args)
-      elsif meta = Mothership.global_option(name)
-        found, val = find_in(@global, name, meta, context, *args)
+      elsif @global.is_a?(self.class)
+        found, val = @global.get(name, context, *args)
+      elsif @global.key?(name)
+        return [true, @global[name]]
       end
 
-      return val if not found
+      return [false, val] if not found
 
       if val == :interact && interact = meta[:interact]
-        context.instance_exec(*args, &interact)
+        [true, context.instance_exec(*args, &interact)]
       else
-        convert_given(meta, context, val, *args)
+        [true, convert_given(meta, context, val, *args)]
       end
     ensure
       @current_input = before_input
