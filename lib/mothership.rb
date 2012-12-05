@@ -27,8 +27,8 @@ class Mothership
       global_parser = Parser.new(@@global)
       name, *argv = global_parser.parse_flags(argv, @@commands)
 
-      global = new
-      global.input = Inputs.new(@@global, global, global_parser)
+      global = new(@@global)
+      global.input = Inputs.new(@@global, global, {}, global_parser.given)
 
       return global.default_action unless name
 
@@ -38,8 +38,11 @@ class Mothership
       return global.unknown_command(cmdname) unless cmd
 
       ctx = cmd.context.new
+
+      # make global input available for those wrapping execute
       ctx.input = global.input
-      ctx.execute(cmd, argv, global_parser.given)
+
+      ctx.execute(cmd, argv, global.input)
 
       code = @@exit_status
 
