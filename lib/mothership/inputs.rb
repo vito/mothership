@@ -100,7 +100,7 @@ class Mothership
       if @command && meta = @command.inputs[name]
         found, val = find_in(@given, name, meta, context, *args)
       elsif @global.is_a?(self.class)
-        found, val = @global.get(name, context, *args)
+        return @global.get(name, context, *args)
       elsif @global.key?(name)
         return [true, @global[name]]
       end
