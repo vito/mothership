@@ -149,14 +149,17 @@ class Mothership
         else
           context.instance_exec(given, *args, &convert)
         end
-      elsif meta[:type] == :integer
-        given.to_i
-      elsif meta[:type] == :float
-        given.to_f
-      elsif meta[:type] == :boolean
-        given == "true"
       else
-        given
+        case meta[:type]
+        when :integer, :number, :numeric
+          given.to_i
+        when :float
+          given.to_f
+        when :boolean
+          given == "true"
+        else
+          given
+        end
       end
     end
 
