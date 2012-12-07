@@ -153,9 +153,9 @@ class Mothership
         case meta[:type]
         when :integer, :number, :numeric
           given.to_i
-        when :float
+        when :float, :floating
           given.to_f
-        when :boolean
+        when :bool, :boolean
           given == "true"
         else
           given
