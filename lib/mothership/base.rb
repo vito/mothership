@@ -46,8 +46,8 @@ class Mothership
       @command = nil
     end
 
-    def alias_command(orig, new)
-      @@commands[new] = @@commands[orig]
+    def alias_command(new, orig = nil)
+      @@commands[new] = orig ? @@commands[orig] : @command
     end
   end
 

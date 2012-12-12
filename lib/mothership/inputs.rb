@@ -81,10 +81,13 @@ class Mothership
           Mothership.global_option(name)
         end
 
-      if interact = meta[:interact]
-        context.instance_exec(*args, &interact)
+      interact = meta[:interact] || :"ask_#{name}"
+
+      case interact
+      when Symbol, String
+        context.send(interact, *args)
       else
-        context.send(:"ask_#{name}", *args)
+        context.instance_exec(*args, &interact)
       end
     end
 
