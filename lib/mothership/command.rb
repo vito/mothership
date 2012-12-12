@@ -90,6 +90,16 @@ class Mothership
       options[:interact] = interact if interact
       options[:description] = options.delete(:desc) if options.key?(:desc)
 
+      options[:type] ||=
+        case options[:default]
+        when true, false
+          :boolean
+        when Integer
+          :integer
+        when Float
+          :floating
+        end
+
       unless options[:hidden]
         @flags["--#{name.to_s.gsub("_", "-")}"] = name
 
