@@ -41,7 +41,7 @@ class Mothership
 
         input = @command.inputs[name]
 
-        if input[:interact] && argv.first == "_"
+        if argv.first == "--ask"
           @given[name] = :interact
           argv.shift
           next
@@ -162,7 +162,7 @@ class Mothership
         "--#$1"
 
       when /^--ask-(.+)/
-        argv.unshift "_"
+        argv.unshift "--ask"
         "--#$1"
 
       # --foo=bar form

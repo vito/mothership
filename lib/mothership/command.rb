@@ -2,7 +2,7 @@ require "mothership/inputs"
 
 class Mothership
   class Command
-    attr_accessor :name, :description
+    attr_accessor :name, :description, :interactions
 
     attr_reader :context, :inputs, :arguments, :flags
 
@@ -60,8 +60,12 @@ class Mothership
       @before.each { |f, c| c.new.instance_exec(&f) }
 
       name = @name
+
       ctx = @context.new(self)
+      ctx.extend @interactions if @interactions
+
       ctx.input = Inputs.new(self, ctx, inputs, given, global)
+
 
       action = proc do |*given_inputs|
         ctx.input = given_inputs.first || ctx.input

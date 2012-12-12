@@ -31,6 +31,11 @@ class Mothership
       @command.add_input(name, options, &interact)
     end
 
+    # specify a module that defines interactions for each input
+    def interactions(mod)
+      @command.interactions = mod
+    end
+
     # register a command
     def method_added(name)
       return unless @command
@@ -89,6 +94,6 @@ class Mothership
 
     raise "no active input" unless input
 
-    @input.interact(input, *args)
+    @input.interact(input, self, *args)
   end
 end

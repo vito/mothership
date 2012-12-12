@@ -73,7 +73,7 @@ class Mothership
       val
     end
 
-    def interact(name, *args)
+    def interact(name, context, *args)
       meta =
         if @command
           @command.inputs[name]
@@ -82,7 +82,9 @@ class Mothership
         end
 
       if interact = meta[:interact]
-        @context.instance_exec(*args, &interact)
+        context.instance_exec(*args, &interact)
+      else
+        context.send(:"ask_#{name}", *args)
       end
     end
 
@@ -107,8 +109,8 @@ class Mothership
 
       return [false, val] if not found
 
-      if val == :interact && interact = meta[:interact]
-        [true, context.instance_exec(*args, &interact)]
+      if val == :interact
+        [true, interact(name, context, *args)]
       else
         [true, convert_given(meta, context, val, *args)]
       end
@@ -136,7 +138,7 @@ class Mothership
         [true, [where[singular]]]
       else
         # no value given; set as default
-        [false, default_for(meta, context, *args)]
+        [false, default_for(name, meta, context, *args)]
       end
     end
 
@@ -163,7 +165,7 @@ class Mothership
       end
     end
 
-    def default_for(meta, context, *args)
+    def default_for(name, meta, context, *args)
       if meta.key?(:default)
         default = meta[:default]
 
@@ -172,8 +174,8 @@ class Mothership
         else
           default
         end
-      elsif interact = meta[:interact]
-        context.instance_exec(*args, &interact)
+      elsif meta[:interact] || context.respond_to?(:"ask_#{name}", true)
+        interact(name, context, *args)
       elsif meta[:type] == :boolean
         false
       elsif meta[:argument] == :splat
