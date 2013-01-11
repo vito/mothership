@@ -15,11 +15,11 @@ class Mothership
       @global = global
     end
 
-    def given?(name)
+    def has?(name)
       @inputs.key?(name) || @given.key?(name)
     end
 
-    def given(name)
+    def direct(name)
       if @inputs.key?(name)
         @inputs[name]
       elsif (given = @given[name]) != :interact
