@@ -32,7 +32,7 @@ class Mothership
     end
 
     def merge_given(given)
-      self.class.new(@command, @context, @inputs, @given.merge(given), @global)
+      self.class.new(@command, @context, @inputs.dup, @given.merge(given), @global)
     end
 
     def rebase(inputs)
@@ -40,7 +40,7 @@ class Mothership
     end
 
     def rebase_given(given)
-      self.class.new(@command, @context, @inputs, given.merge(@given), @global)
+      self.class.new(@command, @context, @inputs.dup, given.merge(@given), @global)
     end
 
     def without(*names)
