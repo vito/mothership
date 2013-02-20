@@ -37,7 +37,7 @@ class Mothership
       end
     elsif Help.has_groups?
       unless input[:all]
-        puts "Showing basic command set. Pass --all to list all commands."
+        puts "Showing basic command set. Run with 'help --all' to list all commands."
         puts ""
       end
 
