@@ -11,6 +11,7 @@ Gem::Specification.new do |s|
   s.summary     = %q{
     Command-line library for big honkin' CLI apps.
   }
+  s.license     = "BSD"
 
   s.rubyforge_project = "mothership"
 
